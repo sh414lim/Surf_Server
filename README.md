@@ -45,4 +45,10 @@ $ nest g s Users
 # email 무료 전송 라이브러리
 $ npm i nodemailer
 $ npm i @types/nodemailer --save-dev
+
+# 모듈 생ㅓ
+$ nest g mo Users
+
+# node.js Node_env 설정
+ npm run start:dev 실행 시 설정
 ```

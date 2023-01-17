@@ -11,9 +11,14 @@ import { AppService } from './app.service';
 import { UpdateUserDto } from './user/dto/update-user.dto';
 import { UserService } from './user/user.service';
 
-@Controller('app')
+@Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
+
+  @Get()
+  getHellos(): string {
+    return process.env.DATABASE_HOST;
+  }
 
   @Get('/*ello')
   getHello(@Req() req: Request): string {
