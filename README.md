@@ -54,4 +54,7 @@ $ npm run start:dev 실행 시 설정
 
  #@nestjs.config  패키지 제공 - ConfigModule 동적 제공
  $ npm i --save @nestjs/config
+
+ ## Mysql 설정 -> docker
+$ docker run --name mysql-local -p 3306:3306/tcp -e MYSQL_ROOT_PASSWORD=test -d mysql:8
 ```
