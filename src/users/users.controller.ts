@@ -1,26 +1,18 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  VersioningType,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UserLoginDto } from './dto/user-login.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 import { UserInfo } from './UserInfo';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { UserLoginDto } from 'src/user/dto/user-login.dto';
-import { VerifyEmailDto } from 'src/user/dto/verify-email.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {} // UsersService  를 컨트롤러에 주입
+  constructor(private usersService: UsersService) {}
 
   @Post()
   async createUser(@Body() dto: CreateUserDto): Promise<void> {
     const { name, email, password } = dto;
-    await this.usersService.createUser(name, email, password); // dto 에서 얻은 정보를 UserService 에 전달
+    await this.usersService.createUser(name, email, password);
   }
 
   @Post('/email-verify')
@@ -38,31 +30,7 @@ export class UsersController {
   }
 
   @Get('/:id')
-  async getUserInfo(@Param('id') userId: string): Promise<string> {
+  async getUserInfo(@Param('id') userId: string): Promise<UserInfo> {
     return await this.usersService.getUserInfo(userId);
   }
-
-  //   @Post()
-  //   create(@Body() createUserDto: CreateUserDto) {
-  //     const { name, email, password } = createUserDto;
-  //     return `유저를 생성하엿습니다 name :  ${name}, email : ${email}`;
-  //   }
-
-  //   @Post('/email-verify')
-  //   async verifyEmail(@Query() dto: VerifyEmailDto): Promise<string> {
-  //     console.log(dto);
-  //     return;
-  //   }
-
-  //   @Post('/login')
-  //   async login(@Body() dto: UserLoginDto): Promise<string> {
-  //     console.log(dto);
-  //     return;
-  //   }
-
-  //   @Get('/:id')
-  //   async getUserInfo(@Param('id') userid: string): Promise<UserInfo> {
-  //     console.log(userid);
-  //     return;
-  //   }
 }

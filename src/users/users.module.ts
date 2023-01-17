@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { EmailModule } from 'src/email/email.module';
-import { UserController } from 'src/user/user.controller';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
