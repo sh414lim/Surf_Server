@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import Mail from 'nodemailer/lib/mailer';
 import * as nodemailer from 'nodemailer';
+import emailCofing from 'src/config/emailCofing';
+import { ConfigType } from '@nestjs/config';
 
 interface EmailOptions {
   // 메일 옵션 ->  수신자 To 메일 제목 subject html 형식 본문
@@ -13,13 +15,14 @@ interface EmailOptions {
 export class EmailService {
   private transporter: Mail;
 
-  constructor() {
+  constructor(
+    @Inject(emailCofing.KEY) private config: ConfigType<typeof emailCofing>, // 주입 받을때 @Inject 데커레이터의 토큰을 앞서 만든  ConfigFactory Key 인 email 문자 열로  넣어준디
+  ) {
     this.transporter = nodemailer.createTransport({
-      // nodemailer 에서 제공하는 Transporter 객체
-      service: 'gmail',
+      service: config.service, // env 파일 값
       auth: {
-        user: 'sh414lim@gmail.com',
-        pass: 'qeplrtarkfhgddof',
+        user: config.auth.user, // env 파일 값
+        pass: config.auth.pass, // env 파일 값
       },
     });
   }
@@ -28,7 +31,7 @@ export class EmailService {
     emailAddress: string,
     signupVerifyToken: string,
   ) {
-    const baseUrl = 'http://localhost:8000';
+    const baseUrl = this.config.baseUrl; // env 파일 값
 
     const url = `${baseUrl}/users/email-verify?signupVerifyToken=${signupVerifyToken}`; // 유저가 누를 버튼이 가질 링크를 구성 - 이 링크를 통해 우리 서비로 이메일 인증요청이 들어온다
 

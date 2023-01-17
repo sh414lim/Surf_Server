@@ -50,5 +50,8 @@ $ npm i @types/nodemailer --save-dev
 $ nest g mo Users
 
 # node.js Node_env 설정
- npm run start:dev 실행 시 설정
+$ npm run start:dev 실행 시 설정
+
+ #@nestjs.config  패키지 제공 - ConfigModule 동적 제공
+ $ npm i --save @nestjs/config
 ```
