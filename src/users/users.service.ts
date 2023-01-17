@@ -58,4 +58,8 @@ export class UsersService {
 
     throw new Error('Method not implemented.');
   }
+
+  findOne(id: number) {
+    return `This action returns a #${id} user`;
+  }
 }
