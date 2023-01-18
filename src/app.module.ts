@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import emailConfig from './config/emailConfig';
 import { validationSchema } from './config/validationSchema';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -20,13 +21,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forRoot({
       // AppModule 에 typeOrmModule 을 동적 모듈로 가져온다
       type: 'mysql', // typeorm 이 다루고자 하는 데이터 베이스 타입
-      host: 'localhost', //연결할 호스트 주소
+      host: process.env.DATABASE_HOST, //연결할 호스트 주소
       port: 3306, // 데이터베이스 에 연결을 위해 열어놓은 포트 번호 기본값:3306
-      username: 'root',
-      password: 'sh6130lim',
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
       database: 'user_info', // 데이터베이스 스키마
       entities: [__dirname + '/**/*.entity{.ts,.js}'], // 소스코드 내에 typeorm이 구동될때 인식하도록 할 엔티티 클래스의 경로를 지정
-      synchronize: true, // 서비스 구동시 소스 코드 기반으로 데이터베이스 스키마를 동기화 할 여부 개발의 편의를 위해 true
+      synchronize: process.env.DATABASE_SYNCHRONUZE === 'true', // 서비스 구동시 소스 코드 기반으로 데이터베이스 스키마를 동기화 할 여부 개발의 편의를 위해 true
     }),
   ],
   controllers: [ApiController, AppController],

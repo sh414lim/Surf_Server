@@ -1,14 +1,34 @@
 import * as uuid from 'uuid';
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { EmailService } from 'src/email/email.service';
 import { UserInfo } from './UserInfo';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from './entities/user.entity';
+import { DataSource, Repository } from 'typeorm';
+import { ulid } from 'ulid';
 
 @Injectable()
 export class UsersService {
-  constructor(private emailService: EmailService) {}
+  constructor(
+    private emailService: EmailService,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>, // UserService 에 @InjectRepository 데커레이터로 유저 저장소 주입
+    private dataSource: DataSource, // 먼저 typeorm 에 제공하는 DataSource  객체 주입
+  ) {}
 
   async createUser(name: string, email: string, password: string) {
-    await this.checkUserExists(email);
+    const userExist = await this.checkUserExists(email);
+
+    // console.log(userExist);
+    // if (userExist) {
+    //   throw new UnprocessableEntityException(
+    //     '해당 이메일로는 가입이 불가능합니다',
+    //   );
+    // }
 
     const signupVerifyToken = uuid.v1();
 
@@ -16,16 +36,38 @@ export class UsersService {
     await this.sendMemberJoinEmail(email, signupVerifyToken);
   }
 
-  private checkUserExists(email: string) {
-    return false; // TODO: DB 연동 후 구현
+  private async checkUserExists(emailAddress: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { email: emailAddress },
+    });
+
+    console.log(user);
+    return user !== undefined; // TODO: DB 연동 후 구현
   }
 
-  private saveUser(
+  private async saveUser(
     name: string,
     email: string,
     password: string,
     signupVerifyToken: string,
   ) {
+    const queryRunner = this.dataSource.createQueryRunner(); // 주입받은 DataSource  객체에서 QueryRunner 를 생성
+
+    await this.dataSource.transaction(async (manger) => {
+      const user = new UserEntity(); // 새로운 유져 엔티티 객체 생성
+      user.id = ulid(); // 랜덤 스트링 pk id 생성
+      user.name = name;
+      user.email = email;
+      user.password = password;
+      user.signupVerifyToken = signupVerifyToken;
+
+      await manger.save(user);
+
+      // throw new InternalServerErrorException
+    });
+
+    // await this.userRepository.save(user); // 저장소를 이용하여 엔티티를 데이터 베이스에 저장
+
     return; // TODO: DB 연동 후 구현
   }
 
