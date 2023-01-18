@@ -2,6 +2,7 @@ import * as uuid from 'uuid';
 import {
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { EmailService } from 'src/email/email.service';
@@ -23,12 +24,12 @@ export class UsersService {
   async createUser(name: string, email: string, password: string) {
     const userExist = await this.checkUserExists(email);
 
-    // console.log(userExist);
-    // if (userExist) {
-    //   throw new UnprocessableEntityException(
-    //     '해당 이메일로는 가입이 불가능합니다',
-    //   );
-    // }
+    console.log(userExist);
+    if (userExist) {
+      throw new UnprocessableEntityException(
+        '해당 이메일로는 가입이 불가능합니다',
+      );
+    }
 
     const signupVerifyToken = uuid.v1();
 
@@ -80,8 +81,22 @@ export class UsersService {
 
   async verifyEmail(signupVerifyToken: string): Promise<string> {
     // TODO
-    // 1. DB에서 signupVerifyToken으로 회원 가입 처리중인 유저가 있는지 조회하고 없다면 에러 처리
-    // 2. 바로 로그인 상태가 되도록 JWT를 발급
+    const user = await this.userRepository.findOne({
+      // signupVerifyToken 으로 회원 가입 중인 유저를 찾습니다
+      where: { signupVerifyToken },
+    });
+
+    if (!user) {
+      // 만약 db에 저장되어있지 않다면 에러처리
+      throw new NotFoundException('유저가 존재하지 않습니다');
+    }
+
+    // return this.authService.login({
+    //   // authService 에 로그인 처리 요청
+    //   id: user.id,
+    //   name: user.name,
+    //   email: user.email,
+    // });
 
     throw new Error('Method not implemented.');
   }

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -46,5 +47,14 @@ export class UsersController {
   @Get('/:id')
   async getFindOneUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    if (+id < 1) {
+      throw new NotFoundException('User is not found');
+    }
+
+    return this.usersService.findOne(+id);
   }
 }
