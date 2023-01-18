@@ -1,4 +1,10 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestMiddleware,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApiController } from './api/api.controller';
@@ -8,6 +14,10 @@ import emailConfig from './config/emailConfig';
 import { validationSchema } from './config/validationSchema';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './users/entities/user.entity';
+import {
+  LoggerMiddleware,
+  LoggerMiddleware2,
+} from './middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -33,4 +43,11 @@ import { UserEntity } from './users/entities/user.entity';
   controllers: [ApiController, AppController],
   providers: [AppService, ConfigService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer
+      .apply(LoggerMiddleware, LoggerMiddleware2)
+      .exclude({ path: '/users', method: RequestMethod.GET }) //users 경로로 전달된 GET 요청일 때는 LoggerMiddleware , LoggerMiddleware2 가 무시된다
+      .forRoutes('/users');
+  }
+}

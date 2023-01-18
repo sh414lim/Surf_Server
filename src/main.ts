@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { ValidationPipe } from '@nestjs/common';
+import { LoggerMiddleware3 } from './middleware/logger.middleware';
 
 dotenv.config({
   // dotenv 환경 설정  -
@@ -17,6 +18,7 @@ dotenv.config({
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(LoggerMiddleware3);
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
