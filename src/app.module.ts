@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import emailConfig from './config/emailConfig';
 import { validationSchema } from './config/validationSchema';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -15,6 +16,17 @@ import { validationSchema } from './config/validationSchema';
       load: [emailConfig], // 앞에서 구성해둔 ConfigFactory 를 지정
       isGlobal: true, // 전역모듈 작동 설정 - 어느 모듈이난 사용 가능
       validationSchema, // 환경 변수의 값에 대해 유효성 검사를 수행 하도록 joi 를 이용하여 유효성 검사 객체를 작성3
+    }),
+    TypeOrmModule.forRoot({
+      // AppModule 에 typeOrmModule 을 동적 모듈로 가져온다
+      type: 'mysql', // typeorm 이 다루고자 하는 데이터 베이스 타입
+      host: 'localhost', //연결할 호스트 주소
+      port: 3306, // 데이터베이스 에 연결을 위해 열어놓은 포트 번호 기본값:3306
+      username: 'root',
+      password: 'sh6130lim',
+      database: 'user_info', // 데이터베이스 스키마
+      entities: [__dirname + '/**/*.entity{.ts,.js}'], // 소스코드 내에 typeorm이 구동될때 인식하도록 할 엔티티 클래스의 경로를 지정
+      synchronize: true, // 서비스 구동시 소스 코드 기반으로 데이터베이스 스키마를 동기화 할 여부 개발의 편의를 위해 true
     }),
   ],
   controllers: [ApiController, AppController],
