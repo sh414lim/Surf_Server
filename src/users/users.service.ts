@@ -11,11 +11,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { ulid } from 'ulid';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private emailService: EmailService,
+    private authService: AuthService,
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>, // UserService 에 @InjectRepository 데커레이터로 유저 저장소 주입
     private dataSource: DataSource, // 먼저 typeorm 에 제공하는 DataSource  객체 주입
@@ -25,11 +27,11 @@ export class UsersService {
     const userExist = await this.checkUserExists(email);
 
     console.log(userExist);
-    if (userExist) {
-      throw new UnprocessableEntityException(
-        '해당 이메일로는 가입이 불가능합니다',
-      );
-    }
+    // if (userExist) {
+    //   throw new UnprocessableEntityException(
+    //     '해당 이메일로는 가입이 불가능합니다',
+    //   );
+    // }
 
     const signupVerifyToken = uuid.v1();
 
@@ -85,20 +87,19 @@ export class UsersService {
       // signupVerifyToken 으로 회원 가입 중인 유저를 찾습니다
       where: { signupVerifyToken },
     });
+    console.log(signupVerifyToken);
 
     if (!user) {
       // 만약 db에 저장되어있지 않다면 에러처리
       throw new NotFoundException('유저가 존재하지 않습니다');
     }
 
-    // return this.authService.login({
-    //   // authService 에 로그인 처리 요청
-    //   id: user.id,
-    //   name: user.name,
-    //   email: user.email,
-    // });
-
-    throw new Error('Method not implemented.');
+    return this.authService.login({
+      // authService 에 로그인 처리 요청
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
   }
 
   async login(email: string, password: string): Promise<string> {
