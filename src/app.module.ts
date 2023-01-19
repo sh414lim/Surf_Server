@@ -22,8 +22,9 @@ import authConfig from './config/authConfig';
 import { AuthService } from './auth/auth.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { GuestResolver } from './schemas/guest.resolver';
 import { GuestService } from './guest/guest.service';
+import { join } from 'path/posix';
+import { GuestModule } from './guest/guest.module';
 
 @Module({
   imports: [
@@ -47,12 +48,14 @@ import { GuestService } from './guest/guest.service';
       synchronize: process.env.DATABASE_SYNCHRONUZE === 'true', // 서비스 구동시 소스 코드 기반으로 데이터베이스 스키마를 동기화 할 여부 개발의 편의를 위해 true
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
+      // autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: true, // 메모리 문제로 인해 굳이 내가 파일을 가직고 있을 필요가 없다
       driver: ApolloDriver,
-      autoSchemaFile: 'src/schemas/schema.gql',
     }),
+    GuestModule,
   ],
   controllers: [ApiController, AppController],
-  providers: [AppService, ConfigService, AuthService, GuestResolver, GuestService],
+  providers: [AppService, ConfigService, AuthService, GuestService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {

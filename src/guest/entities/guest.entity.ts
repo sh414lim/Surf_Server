@@ -1,16 +1,22 @@
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
+@ObjectType()
 export class Guest {
   @PrimaryGeneratedColumn()
+  @Field((is) => Int)
   number: number;
 
-  @Column()
-  writer: string;
+  // @Column()
+  @Field((type) => Boolean, { nullable: true })
+  writer: boolean;
 
-  @Column()
+  // @Column()
+  @Field(() => String)
   title: string;
 
-  @Column()
+  // @Column()
+  @Field(() => String)
   contents: string;
 }

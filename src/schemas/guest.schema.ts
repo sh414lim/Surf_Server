@@ -17,7 +17,6 @@ export class User {
 @ArgsType()
 @InputType()
 export class UserInputType {
-  @IsEmail()
   @Field()
   email: string;
 
