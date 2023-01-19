@@ -11,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { ulid } from 'ulid';
+import * as jwt from 'jsonwebtoken';
 import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
@@ -106,18 +107,33 @@ export class UsersService {
     // TODO
     // 1. email, password를 가진 유저가 존재하는지 DB에서 확인하고 없다면 에러 처리
     // 2. JWT를 발급
+    const user = await this.userRepository.findOne({
+      where: { email, password },
+    });
 
-    throw new Error('Method not implemented.');
+    if (!user) {
+      throw new NotFoundException('유저가 존재하지 않습니다');
+    }
+
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
   }
+  async getUserInfo(userId: any): Promise<UserInfo> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
 
-  async getUserInfo(userId: string): Promise<UserInfo> {
-    // 1. userId를 가진 유저가 존재하는지 DB에서 확인하고 없다면 에러 처리
-    // 2. 조회된 데이터를 UserInfo 타입으로 응답
+    if (!user) {
+      throw new NotFoundException('유저가 존재하지 않습니다');
+    }
 
-    throw new Error('Method not implemented.');
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
   }
 }

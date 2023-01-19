@@ -19,10 +19,12 @@ import {
   LoggerMiddleware2,
 } from './middleware/logger.middleware';
 import authConfig from './config/authConfig';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [
     UsersModule,
+
     ConfigModule.forRoot({
       envFilePath: [`${__dirname}/config/env/.${process.env.NODE_ENV}.env`], //  node_env 의 값이 strage 이면 dist 디렉터리 아래에 존재하는 파일인 .stage.env 를 가져오나
       load: [emailConfig, authConfig], // 앞에서 구성해둔 ConfigFactory 를 지정
@@ -42,7 +44,7 @@ import authConfig from './config/authConfig';
     }),
   ],
   controllers: [ApiController, AppController],
-  providers: [AppService, ConfigService],
+  providers: [AppService, ConfigService, AuthService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {

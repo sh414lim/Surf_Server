@@ -1,10 +1,14 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { AuthService } from 'src/auth/auth.service';
+import { Request } from 'express';
 
 //CanActiVate 인터페이스 구현
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService) {}
+
   canActivate(
     // 인수로 ExecutionContext 인스턴스를 인수로 받는다 -  ExecutionContext 는 ArgumentHost 를 상속 받는다(요청과 응답에 대한 정보를 가지고 있다.)
     context: ExecutionContext,
@@ -13,7 +17,13 @@ export class AuthGuard implements CanActivate {
     return this.validateRequest(request);
   }
 
-  private validateRequest(request: any) {
+  private validateRequest(request: Request) {
+    console.log(request.headers.authorization);
+    console.log(request.headers);
+    const jwtString = request.headers.authorization.split('Bearer ')[1];
+
+    this.authService.verify(jwtString);
+
     return true;
   }
 }
