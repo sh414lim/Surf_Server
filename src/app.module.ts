@@ -20,6 +20,10 @@ import {
 } from './middleware/logger.middleware';
 import authConfig from './config/authConfig';
 import { AuthService } from './auth/auth.service';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { GuestResolver } from './schemas/guest.resolver';
+import { GuestService } from './guest/guest.service';
 
 @Module({
   imports: [
@@ -42,9 +46,13 @@ import { AuthService } from './auth/auth.service';
       entities: [__dirname + '/**/*.entity{.ts,.js}'], // 소스코드 내에 typeorm이 구동될때 인식하도록 할 엔티티 클래스의 경로를 지정
       synchronize: process.env.DATABASE_SYNCHRONUZE === 'true', // 서비스 구동시 소스 코드 기반으로 데이터베이스 스키마를 동기화 할 여부 개발의 편의를 위해 true
     }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: 'src/schemas/schema.gql',
+    }),
   ],
   controllers: [ApiController, AppController],
-  providers: [AppService, ConfigService, AuthService],
+  providers: [AppService, ConfigService, AuthService, GuestResolver, GuestService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
