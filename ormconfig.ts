@@ -6,9 +6,10 @@ export const AppDataSource = new DataSource({
   port: 3306,
   username: 'root',
   password: 'sh6130lim',
-  database: 'User_info',
+  database: 'user_info',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
   migrations: [__dirname + '/**/migrations/*.js'],
   migrationsTableName: 'migrations',
 });
+//

@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { string } from 'joi';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -6,17 +7,14 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class Guest {
   @PrimaryGeneratedColumn()
   @Field((is) => Int)
-  number: number;
+  id: number;
 
-  // @Column()
-  @Field((type) => Boolean, { nullable: true })
-  writer: boolean;
+  @Field((type) => String)
+  name: string;
 
-  // @Column()
-  @Field(() => String)
-  title: string;
+  @Field((type) => String)
+  email: string;
 
-  // @Column()
-  @Field(() => String)
-  contents: string;
+  // @Field((type) => string)
+  // password: string;
 }
